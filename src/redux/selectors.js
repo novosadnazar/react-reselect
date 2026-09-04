@@ -1,11 +1,11 @@
 import { statusFilters } from "./constants";
+import { createSelector } from "@reduxjs/toolkit";
 
 export const selectTasks = (state) => state.tasks.items;
 export const selectStatusFilter = (state) => state.filters.status;
 
-export const selectTaskCount = (state) => {
-  const tasks = selectTasks(state);
-console.log("task count", );
+export const selectTaskCount = createSelector([selectTasks], (tasks) => {
+
   return tasks.reduce(
     (count, task) => {
       if (task.completed) {
@@ -21,17 +21,16 @@ console.log("task count", );
       completed: 0,
     }
   );
-};
+})  
 
-export const selectVisiblesTasks = (state) => {
-  const tasks = selectTasks(state);
-    const statusFilter = selectStatusFilter(state);
-    console.log("visible task");
-  if (statusFilter === statusFilters.active) {
-    return tasks.filter((task) => !task.completed);
-  } else if (statusFilter === statusFilters.completed) {
-    return tasks.filter((task) => task.completed);
-  } else {
-    return tasks;
-  }
-};
+export const selectVisiblesTasks = createSelector([selectTasks, selectStatusFilter],
+  (tasks, statusFilter) => {
+
+      if (statusFilter === statusFilters.active) {
+        return tasks.filter((task) => !task.completed);
+      } else if (statusFilter === statusFilters.completed) {
+        return tasks.filter((task) => task.completed);
+      } else {
+        return tasks;
+      }
+  })
